@@ -1,8 +1,10 @@
 const axios = require('axios');
 const stockxConfig = require('./functions/configStockx');
 const configRequest = require('./functions/configRequest');
+const splitProxy = require('split-proxy')
 
 module.exports = {
+    ProxyList: configRequest.ProxyList,
     /**
      * Returns the first item found on stockx
      * 
@@ -10,7 +12,7 @@ module.exports = {
      * @param {Object} options Optionnal settings
      * @param {String} options.currency Currency ticker
      * @param {String} options.country Country ticker
-     * @param {String} options.proxy Proxy url
+     * @param {String} options.proxy Proxy url or ProxyList
      */
     getProduct: async (item, options) => {
         if (typeof item !== "string") throw TypeError('Wrong item, please use string');
@@ -26,7 +28,12 @@ module.exports = {
         const country = stockxConfig.countrys.includes(options?.country) ? options.country : "US";
         extendURI = extendURI + `&country=${country}`;
 
-        const axiosOptions = configRequest(options?.proxy);
+        let proxy = typeof options?.proxy === "string" ? splitProxy(options.proxy) : false
+
+        console.log(options.proxy)
+        if (options?.proxy?.list) proxy = options.proxy.use()
+
+        let axiosOptions = configRequest.agents(proxy);
 
         try {
         const product = await axios.get(baseURI, axiosOptions).then(res => {
@@ -48,6 +55,10 @@ module.exports = {
                 seller: item.brand[0].toUpperCase() + item.brand.slice(1)
             }
         });
+
+        if (options?.proxy?.list) proxy = options.proxy.use()
+
+        axiosOptions = configRequest.agents(proxy)
 
         baseURI = `https://stockx.com/api/products/${product.uuid}?includes=market`
         product.sizes = await axios.get(baseURI + extendURI, axiosOptions).then(res => {
