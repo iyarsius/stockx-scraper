@@ -1,7 +1,7 @@
 {
   "name": "stockx-scraper",
-  "version": "1.0.4",
-  "description": "Scrape sneakers datas from stockx",
+  "version": "1.1.0",
+  "description": "Scrape sneakers data from stockx with dynamic parmeters like proxy (static or rotating), country and currency.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
