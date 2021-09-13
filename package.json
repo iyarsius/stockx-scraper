@@ -1,0 +1,28 @@
+{
+  "name": "stockx-scraper",
+  "version": "1.0.0",
+  "description": "Scrape sneakers datas from stockx",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iyarsius/stockx-scraper.git"
+  },
+  "keywords": [
+    "stockx",
+    "scraper",
+    "api",
+    "sneakers",
+    "data",
+    "price",
+    "nike"
+  ],
+  "author": "iyarsius",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iyarsius/stockx-scraper/issues"
+  },
+  "homepage": "https://github.com/iyarsius/stockx-scraper#readme"
+}
