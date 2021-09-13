@@ -1,6 +1,6 @@
 {
   "name": "stockx-scraper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Scrape sneakers datas from stockx",
   "main": "index.js",
   "scripts": {
