@@ -30,7 +30,6 @@ module.exports = {
 
         let proxy = typeof options?.proxy === "string" ? splitProxy(options.proxy) : false
 
-        console.log(options.proxy)
         if (options?.proxy?.list) proxy = options.proxy.use()
 
         let axiosOptions = configRequest.agents(proxy);

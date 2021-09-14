@@ -37,7 +37,6 @@ module.exports = {
             },
         }
 
-        console.log(proxy)
         if (proxy) axiosConfig.proxy = {
             host: proxy.host,
             port: proxy.port,
