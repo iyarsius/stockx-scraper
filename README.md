@@ -79,6 +79,8 @@ Proxy rotation saved even when calling the function multiple times.
 
 # fetch product group
 
+You can also load all sizes types from 1 model, e.g dunk low white/black, dunk low white black (gs), dunk low white black (ps)...
+
 ```js
 const stockx = require('stockx-scraper');
 
