@@ -32,12 +32,12 @@ Item structure:
     • url: <String> Product url to human interface
     • uuid: <String> Product uuid
     • lastSale: <Number> Last sale price (all sizes) in currency
-    • 72hvolume: <Number> Traded volumes in last 3d in currency
+    • 72hvolume: <Number> Amout of sales last 72h
     • retail: <Number> Retail price in USD
     • sku: <String> Product unique SKU
     • colorway: <String> Product colorways e.g "BLACK/WHITE"
     • releaseDate: <String> YYYY/MM/DD Release date
-    • seller: Product distributor e.g Nike, Jordan, Adidas...
+    • seller: <String> Product distributor e.g Nike, Jordan, Adidas...
     • sizes: <Array> Array of sizeObject
 
 SizeObject structure:
@@ -76,3 +76,56 @@ stockx.getProduct('jordan 1', options)
 ```
 
 Proxy rotation saved even when calling the function multiple times.
+
+# fetch product group
+
+```js
+const stockx = require('stockx-scraper');
+
+const options = {
+    currency: 'EUR',
+    country: 'FR',
+    proxy: 'http://host:port@username:password',
+    cookie: 'your cookie here' // By default the module create its own cookies
+}
+
+stockx.getProductGroup('jordan 1', options)
+    .then(group => console.log(group))
+    .catch(e => console.log(e))
+```
+
+ProductGroup structure:
+
+    • men: <RelatedProduct> Men product
+    • women: <RelatedProduct> Women product
+    • gs: <RelatedProduct> Kid product
+    • ps: <RelatedProduct> Infant product
+    • td: <RelatedProduct> Toddler product
+
+RelatedProduct structure:
+
+    • name: <String> Full product name
+    • image: <String> Image directURI
+    • url: <String> Product url to human interface
+    • uuid: <String> Product uuid
+    • lastSale: <Number> Last sale price (all sizes) in currency
+    • 72hvolume: <Number> Amout of sales last 72h
+    • sku: <String> Product unique SKU
+    • seller: <String> Product distributor e.g Nike, Jordan, Adidas...
+
+To scrape entire data from relatedProducts use getProduct function.
+
+```js
+try {
+    // Fetch related products
+    const productGroup = await stockx.getProductGroup('jordan 1')
+
+    // Get entire data from all of them
+    for (const key in productGroup) {
+        // Proxies recommended
+        stockx.getProduct(productGroup[key].sku).then(console.log).catch(e => console.log(e))
+    }
+} catch (e) {
+    console.log(e)
+}
+```
