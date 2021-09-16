@@ -1,6 +1,4 @@
 const axios = require('axios').default;
-const axiosCookieJarSupport = require('axios-cookiejar-support').default;
-const tough = require('tough-cookie');
 const stockxConfig = require('./functions/configStockx');
 const configRequest = require('./functions/configRequest');
 
