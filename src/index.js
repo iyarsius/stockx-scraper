@@ -27,7 +27,7 @@ module.exports = {
         const country = stockxConfig.countrys.includes(options?.country) ? options.country : "US";
         extendURI = extendURI + `&country=${country}`;
 
-        let axiosOptions = configRequest.searchAndGetProduct(options?.proxy);
+        let axiosOptions = configRequest.searchAndGetProduct(options);
 
         try {
             const product = await axios.get(baseURI, axiosOptions).then(res => {
@@ -45,7 +45,7 @@ module.exports = {
                 }
             });
 
-            axiosOptions = configRequest.searchAndGetProduct(options?.proxy)
+            axiosOptions = configRequest.searchAndGetProduct(options)
 
             baseURI = `https://stockx.com/api/products/${product.uuid}?includes=market`
             product.sizes = await axios.get(baseURI + extendURI, axiosOptions).then(res => {
@@ -60,7 +60,7 @@ module.exports = {
                     const shoe = variants[key]
                     const sizeData = shoe.shoeSize;
 
-                    const usSize = sizeData.replace(/[A-Z]/g, "")
+                    const usSize = sizeData.replace(/[A-Z]|[a-z]/g, "")
                     let sizeConverter = convert.men.find(s => s.us === usSize)
 
                     if (!sizeConverter) continue;
@@ -68,7 +68,7 @@ module.exports = {
                     let euSize = sizeConverter.eu
                     let sizeType = ""
 
-                    if (sizeData.includes("W")) {
+                    if (sizeData.toLowerCase().includes("w")) {
                         sizeConverter = convert.women.find(s => s.us === usSize)
                         const isAdidas = shoe.title.toLowerCase().includes("adidas")
                         if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
@@ -77,7 +77,7 @@ module.exports = {
                         sizeType = "W"
                     }
 
-                    if (sizeData.includes("Y")) {
+                    if (sizeData.toLowerCase().includes("y")) {
                         sizeConverter = convert.gs.find(s => s.us === usSize)
                         if (!sizeConverter) continue;
                         euSize = sizeConverter.eu
@@ -91,7 +91,7 @@ module.exports = {
                         sizeType = ""
                     }
 
-                    if (sizeData.includes("C")) {
+                    if (sizeData.toLowerCase().includes("c")) {
                         sizeConverter = convert.td.find(s => s.us === usSize)
                         if (!sizeConverter) continue;
                         euSize = sizeConverter.eu
@@ -101,7 +101,7 @@ module.exports = {
                     if (sizeData.includes("K")) {
                         const isAdidas = shoe.title.toLowerCase().includes("adidas");
                         if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
-                        euSize = isAdidas ? sizeConverter.eu : null
+                        euSize = sizeConverter.eu
                         sizeType = "K"
                     }
 
@@ -142,7 +142,7 @@ module.exports = {
     getProductGroup: async (item, options) => {
         const product = await module.exports.getProduct(item, options);
 
-        const axiosOptions = configRequest.fetchRelatedProducts(product, options?.proxy, options?.cookie);
+        const axiosOptions = configRequest.fetchRelatedProducts(product, options);
 
         const data = {
             operationName: "FetchRelatedProducts",

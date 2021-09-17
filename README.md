@@ -66,7 +66,8 @@ const proxy = new stockx.ProxyList([
 const options = {
     currency: 'EUR',
     country: 'FR',
-    proxy: proxy
+    proxy: proxy,
+    cookie: 'your cookie here' // By default the module create its own cookies
 }
 
 // Proxies will rotate on each request to avoid ip block
@@ -84,13 +85,7 @@ You can also load all sizes types from 1 model, e.g dunk low white/black, dunk l
 ```js
 const stockx = require('stockx-scraper');
 
-const options = {
-    currency: 'EUR',
-    country: 'FR',
-    proxy: 'http://host:port@username:password',
-    cookie: 'your cookie here' // By default the module create its own cookies
-}
-
+// Same options as getProduct function
 stockx.getProductGroup('jordan 1', options)
     .then(group => console.log(group))
     .catch(e => console.log(e))
