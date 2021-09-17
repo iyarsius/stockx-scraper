@@ -16,7 +16,8 @@ const stockx = require('stockx-scraper');
 const options = {
     currency: 'EUR', // Default USD
     country: 'FR', // Default US
-    proxy: 'http://host:port@username:password' // Default localhost
+    proxy: 'http://host:port@username:password', // Default localhost
+    cookie: 'your cookie here' // By default the module create its own cookies
 }
 
 stockx.getProduct('jordan 1', options)
@@ -67,7 +68,7 @@ const options = {
     currency: 'EUR',
     country: 'FR',
     proxy: proxy,
-    cookie: 'your cookie here' // By default the module create its own cookies
+    cookie: 'your cookie here'
 }
 
 // Proxies will rotate on each request to avoid ip block
