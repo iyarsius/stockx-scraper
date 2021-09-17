@@ -72,6 +72,8 @@ module.exports = {
         const userAgent = new UserAgent();
 
         const date = Date.now()
+        const graphqlClientDate = new Date().toISOString().split('T')[0].replace('-', '.')
+
 
         const axiosConfig = {
             headers: {
@@ -82,7 +84,7 @@ module.exports = {
                 "accept": "*/*",
                 'accept-language': 'fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7',
                 'apollographql-client-name': 'Iron',
-                'apollographql-client-version': '2021.09.15',
+                'apollographql-client-version': graphqlClientDate,
                 'content-length': 1233,
                 'content-type': 'application/json',
                 'cookie': cookie ? cookie : _setCookie({

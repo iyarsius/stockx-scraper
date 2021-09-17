@@ -125,7 +125,7 @@ try {
     // Get entire data from all of them
     for (const key in productGroup) {
         // Proxies recommended
-        stockx.getProduct(productGroup[key].sku).then(console.log).catch(e => console.log(e))
+        stockx.getProduct(productGroup[key].sku).then(console.log)
     }
 } catch (e) {
     console.log(e)

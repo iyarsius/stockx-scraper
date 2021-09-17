@@ -125,7 +125,6 @@ module.exports = {
             })
             return product
         } catch (e) {
-            console.log(e)
             if (e.code === "ECONNREFUSED") throw Error('Connection not possible')
             throw Error(e.message)
         }
