@@ -73,6 +73,10 @@ module.exports = {
 
         const date = Date.now()
         const graphqlClientDate = new Date().toISOString().split('T')[0].replace('-', '.')
+        
+        const _randomizeDate = (range) => {
+            return date - Math.floor(Math.random() * range)
+        }
 
 
         const axiosConfig = {
@@ -95,11 +99,11 @@ module.exports = {
                     pxcts: "1dc1cf00-169d-11ec-a806-23ebea6bef8b",
                     _pxvid: "1dc17a91-169d-11ec-8411-487746767177",
                     _px_f394gi7Fvmc43dfg_user_id: "MWZkNzQxODAtMTY5ZC0xMWVjLThhODUtOTdmMTQ5ZGEwNDhi",
-                    _gcl_au: "1.1.1155215511.1631762637",
+                    _gcl_au: `1.1.1155215511.${_randomizeDate(600)}`,
                     stockx_preferred_market_activity: "sales",
-                    _fbp: "fb.1.1631762641848.156261706",
+                    _fbp: `fb.1.${_randomizeDate(500)}.156261706`,
                     IR_gbd: "stockx.com",
-                    _rdt_uuid: "1631762642621.940b726c-9d3f-4461-9fb8-73cb8939079c",
+                    _rdt_uuid: `${_randomizeDate(1000)}.940b726c-9d3f-4461-9fb8-73cb8939079c`,
                     _scid: "c53b4b17-341b-4e1b-af09-58fafb14cd17",
                     __pdst: "71a8b1f74feb4b10b2ce64e71476f59a",
                     __ssid: "9dd5883029990e839d6c8acc1a36bce",
@@ -108,11 +112,11 @@ module.exports = {
                     QuantumMetricSessionID: "79a9ea16bae889ec04156938c92a69db",
                     QuantumMetricUserID: "d45660deacc1312f0197166eac82d689",
                     stockx_dismiss_modal: true,
-                    stockx_dismiss_modal_set: "2021-09-16T03%3A32%3A19.212Z",
-                    stockx_dismiss_modal_expiration: "2021-09-23T03%3A32%3A19.210Z",
+                    stockx_dismiss_modal_set: "2021-08-24T02%3A31%3A26.804Z",
+                    stockx_dismiss_modal_expiration: "2022-08-24T02%3A31%3A26.803Z;",
                     cookie_policy_accepted: true,
-                    _ga: "GA1.2.1496655354.1631765801",
-                    _gid: "GA1.2.1992914963.1631765801",
+                    _ga: `GA1.2.1496655354.${_randomizeDate(200)}`,
+                    _gid: `GA1.2.1992914963.${_randomizeDate(200)}`,
                     ajs_group_id: "ab_bottom_nav_pdp_android.neither%2Cab_buy_order_status_reskin_android.niether%2Cab_checkout_review_order_verbiage_android.neither%2Cab_checkout_review_purchase_verbiage_android.neither%2Cab_chk_place_order_verbage_web.true%2Cab_chk_review_order_verbage_web.true%2Cab_desktop_home_hero_section_web.control%2Cab_enable_eu_vat_collection_ios.true%2Cab_eu_vat_android.true%2Cab_ios_localized_low_inv_checkout_v3.neither%2Cab_low_inv_badge_expansion_web.true%2Cab_low_inventory_badge_copy_pdp_ios.neither%2Cab_low_inventory_expansion_v2_android.neither%2Cab_new_restock_pdp_android.true%2Cab_pirate_buy_now_web.true%2Cab_pirate_payment_reorder_web.false%2Cab_product_page_refactor_android_v5.neither%2Cab_product_page_refactor_web.true%2Cab_product_size_chart_ios.true%2Cab_rage_click_web.true%2Cab_recently_viewed_pdp_ios.neither%2Cab_refactor_selling_payment_android.neither%2Cab_sell_button_color_ios.dummy%2Cab_seller_profile_redesign_android.false%2Cab_suggested_addresses_android.neither%2Cab_test_korean_language_web.true%2Cab_vertical_picker_home_ios.dummy%2Cab_web_tfc_cnsld_aa.d1",
                     ajs_anonymous_id: "a5ae48e6-90a9-4a21-8fa1-d81851876c2a",
                     stockx_product_visits: Math.floor(Math.random() * 10),
@@ -122,11 +126,11 @@ module.exports = {
                     riskified_recover_updated_verbiage: true,
                     ops_banner_id: "blteaa2251163e21ba6",
                     forterToken: `831776c4243947688e35e04e3f3aefc8_${date}__UDF43b_13ck`,
-                    lastRskxRun: Math.floor(date - Math.random() * 5000 + 4000),
+                    lastRskxRun: _randomizeDate(6000),
                     IR_9060: `${date}%7C0%7C${date}%7C%7C`,
                     IR_PI: `8b270713-169d-11ec-aa8d-4dc937371914%7C${date}`,
                     _px_7125205957_cs: "eyJpZCI6IjFmZDYzMDEwLTE2OWQtMTFlYy04YTg1LTk3ZjE0OWRhMDQ4YiIsInN0b3JhZ2UiOnt9LCJleHBpcmF0aW9uIjoxNjMxNzY5NjgyNzA1fQ==",
-                    _dd_s: `rum=0&expire=${date}`,
+                    _dd_s: `rum=0&expire=${date + Math.floor(Math.random() * 100)}`,
                     _gat: "1",
                     _uetsid: "8a1eb150169d11ec8098390704a6935e",
                     _uetvid: "8a1f1000169d11ec92fc7bd36583c916"
