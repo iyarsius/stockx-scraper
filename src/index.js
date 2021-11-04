@@ -15,7 +15,7 @@ module.exports = {
      */
     getProduct: async (item, options) => {
         if (typeof item !== "string") throw TypeError('Wrong item, please use string');
-        let baseURI = `https://stockx.com/api/browse?&_search=${item}`;
+        let baseURI = `https://xw7sbct9v6-dsn.algolia.net/1/indexes/products/query?x-algolia-agent=Algolia%20for%20JavaScript%20(4.11.0)%3B%20Browser`;
 
         if (options?.currency !== undefined && !stockxConfig.currencys.includes(options?.currency)) throw SyntaxError(`${options.currency} is not a valid currency`);
 
@@ -28,19 +28,24 @@ module.exports = {
         extendURI = extendURI + `&country=${country}`;
 
         let axiosOptions = configRequest.searchAndGetProduct(options);
+        const data = {
+            "query": item,
+            "facets": "*",
+            "filters": ""
+        }
 
         try {
-            const product = await axios.get(baseURI, axiosOptions).then(res => {
-                const items = res.data
-                const item = items.Products["0"]
+            const product = await axios.post(baseURI, data, axiosOptions).then(res => {
+                const item = res.data.hits[0]
+                
                 if (!item) throw Error('No product found')
                 return {
-                    name: item.title,
+                    name: item.name,
                     description: item.description.split("<br>").join("").split("\n\n").join("\n"),
                     image: item.media.imageUrl,
-                    url: `https://stockx.com/${item.urlKey}`,
-                    uuid: item.market.productUuid,
-                    "72hvolume": item.market["salesLast72Hours"],
+                    url: `https://stockx.com/${item.url}`,
+                    uuid: item.uuid,
+                    "72hvolume": item.sales_last_72,
                     seller: item.brand[0].toUpperCase() + item.brand.slice(1)
                 }
             });

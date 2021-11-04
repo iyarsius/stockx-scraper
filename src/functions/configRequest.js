@@ -62,6 +62,8 @@ module.exports = {
                     stockx_product_visits: Math.floor(Math.random() * 10),
                     stockx_default_sneakers_size: "All",
                 }),
+                "x-algolia-api-key": "M2IxODRhYmQ0ZTVjYzczNWY2NGRlNDA1ZjY4MWI4OGJmODUxNTg5MDBiNjRmOWFjZmU5MzkwMmRhNDQwYTE3ZnZhbGlkVW50aWw9MTYzNjIxNTA4Ng==",
+                "x-algolia-application-id": "XW7SBCT9V6",
                 "sec-fetch-dest": "document",
                 "sec-fetch-mode": "navigate",
                 "sec-fetch-site": "none",
