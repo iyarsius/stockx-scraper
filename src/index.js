@@ -30,108 +30,110 @@ module.exports = {
 
 
         try {
-
+            // Retrieve API key
+            const algoliaKey = await stockxConfig.getAlgoliaKey()
             // Connect to stockx index in algolia
-            const client = algoliasearch("XW7SBCT9V6", "M2IxODRhYmQ0ZTVjYzczNWY2NGRlNDA1ZjY4MWI4OGJmODUxNTg5MDBiNjRmOWFjZmU5MzkwMmRhNDQwYTE3ZnZhbGlkVW50aWw9MTYzNjIxNTA4Ng==");
+            const client = algoliasearch("XW7SBCT9V6", algoliaKey);
+
             const index = client.initIndex("products");
 
-            const product = await index.search(item).then(({ hits }) => {
+            const product = await index.search(item, { attributesToRetrieve: ["*"] }).then(({ hits }) => {
                 if (!hits[0]) throw Error('No product found')
                 return {
-                name: hits[0].name,
-                description: hits[0].description.split("<br>").join("").split("\n\n").join("\n"),
-                image: hits[0].media.imageUrl,
-                url: `https://stockx.com/${hits[0].url}`,
-                uuid: hits[0].uuid,
-                "72hvolume": hits[0].sales_last_72,
-                seller: hits[0].brand[0].toUpperCase() + hits[0].brand.slice(1)
-            }
-        })
+                    name: hits[0].name,
+                    description: hits[0].description.split("<br>").join("").split("\n\n").join("\n"),
+                    image: hits[0].media.imageUrl,
+                    url: `https://stockx.com/${hits[0].url}`,
+                    uuid: hits[0].uuid,
+                    "72hvolume": hits[0].sales_last_72,
+                    seller: hits[0].brand[0].toUpperCase() + hits[0].brand.slice(1)
+                }
+            })
 
-        axiosOptions = configRequest.searchAndGetProduct(options)
+            axiosOptions = configRequest.searchAndGetProduct(options)
 
-        baseURI = `https://stockx.com/api/products/${product.uuid}?includes=market`
-        product.sizes = await axios.get(baseURI + extendURI, axiosOptions).then(res => {
-            if (res.data.Product.shippingGroup !== 'sneakers') throw new Error("Invalid product, only support sneakers")
-            const data = res.data;
-            const variants = data.Product.children
+            baseURI = `https://stockx.com/api/products/${product.uuid}?includes=market`
+            product.sizes = await axios.get(baseURI + extendURI, axiosOptions).then(res => {
+                if (res.data.Product.shippingGroup !== 'sneakers') throw new Error("Invalid product, only support sneakers")
+                const data = res.data;
+                const variants = data.Product.children
 
-            const sizes = [];
-            const convert = stockxConfig.sizes
+                const sizes = [];
+                const convert = stockxConfig.sizes
 
-            for (const key in variants) {
-                const shoe = variants[key]
-                const sizeData = shoe.shoeSize;
+                for (const key in variants) {
+                    const shoe = variants[key]
+                    const sizeData = shoe.shoeSize;
 
-                const usSize = sizeData.replace(/[A-Z]|[a-z]/g, "")
-                let sizeConverter = convert.men.find(s => s.us === usSize)
+                    const usSize = sizeData.replace(/[A-Z]|[a-z]/g, "")
+                    let sizeConverter = convert.men.find(s => s.us === usSize)
 
-                if (!sizeConverter) continue;
-
-                let euSize = sizeConverter.eu
-                let sizeType = ""
-
-                if (sizeData.toLowerCase().includes("w")) {
-                    sizeConverter = convert.women.find(s => s.us === usSize)
-                    const isAdidas = shoe.title.toLowerCase().includes("adidas")
-                    if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
                     if (!sizeConverter) continue;
-                    euSize = sizeConverter.eu
-                    sizeType = "W"
+
+                    let euSize = sizeConverter.eu
+                    let sizeType = ""
+
+                    if (sizeData.toLowerCase().includes("w")) {
+                        sizeConverter = convert.women.find(s => s.us === usSize)
+                        const isAdidas = shoe.title.toLowerCase().includes("adidas")
+                        if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
+                        if (!sizeConverter) continue;
+                        euSize = sizeConverter.eu
+                        sizeType = "W"
+                    }
+
+                    if (sizeData.toLowerCase().includes("y")) {
+                        sizeConverter = convert.gs.find(s => s.us === usSize)
+                        if (!sizeConverter) continue;
+                        euSize = sizeConverter.eu
+                        sizeType = "Y"
+                    }
+
+                    if (shoe.title.toLowerCase().includes("adidas")) {
+                        sizeConverter = convert.adidas.men.find(s => s.us === usSize)
+                        if (!sizeConverter) continue;
+                        euSize = sizeConverter.eu
+                        sizeType = ""
+                    }
+
+                    if (sizeData.toLowerCase().includes("c")) {
+                        sizeConverter = convert.td.find(s => s.us === usSize)
+                        if (!sizeConverter) continue;
+                        euSize = sizeConverter.eu
+                        sizeType = "C"
+                    }
+
+                    if (sizeData.includes("K")) {
+                        const isAdidas = shoe.title.toLowerCase().includes("adidas");
+                        if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
+                        euSize = sizeConverter.eu
+                        sizeType = "K"
+                    }
+
+
+                    sizes.push({
+                        sizeUS: usSize,
+                        sizeEU: euSize,
+                        sizeType: sizeType,
+                        lowestAsk: shoe.market.lowestAsk,
+                        highestBid: shoe.market.highestBid,
+                        lastSale: shoe.market.lastSale
+                    })
                 }
+                product.retail = res.data.Product.traits.find(t => t.key === "retail_price")?.value
+                product.sku = res.data.Product.traits.find(t => t.key === "style_id")?.value
+                product.colorway = res.data.Product.traits.find(t => t.key === "colorway")?.value.toUpperCase()
+                product.releaseDate = res.data.Product.traits.find(t => t.key === "release_date")?.value
+                product.lastSale = sizes.map(s => s.lastSale).sort()[0]
 
-                if (sizeData.toLowerCase().includes("y")) {
-                    sizeConverter = convert.gs.find(s => s.us === usSize)
-                    if (!sizeConverter) continue;
-                    euSize = sizeConverter.eu
-                    sizeType = "Y"
-                }
-
-                if (shoe.title.toLowerCase().includes("adidas")) {
-                    sizeConverter = convert.adidas.men.find(s => s.us === usSize)
-                    if (!sizeConverter) continue;
-                    euSize = sizeConverter.eu
-                    sizeType = ""
-                }
-
-                if (sizeData.toLowerCase().includes("c")) {
-                    sizeConverter = convert.td.find(s => s.us === usSize)
-                    if (!sizeConverter) continue;
-                    euSize = sizeConverter.eu
-                    sizeType = "C"
-                }
-
-                if (sizeData.includes("K")) {
-                    const isAdidas = shoe.title.toLowerCase().includes("adidas");
-                    if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
-                    euSize = sizeConverter.eu
-                    sizeType = "K"
-                }
-
-
-                sizes.push({
-                    sizeUS: usSize,
-                    sizeEU: euSize,
-                    sizeType: sizeType,
-                    lowestAsk: shoe.market.lowestAsk,
-                    highestBid: shoe.market.highestBid,
-                    lastSale: shoe.market.lastSale
-                })
-            }
-            product.retail = res.data.Product.traits.find(t => t.key === "retail_price")?.value
-            product.sku = res.data.Product.traits.find(t => t.key === "style_id")?.value
-            product.colorway = res.data.Product.traits.find(t => t.key === "colorway")?.value.toUpperCase()
-            product.releaseDate = res.data.Product.traits.find(t => t.key === "release_date")?.value
-            product.lastSale = sizes.map(s => s.lastSale).sort()[0]
-
-            return sizes
-        })
-        return product
-    } catch(e) {
-        if (e.code === "ECONNREFUSED") throw Error('Connection not possible')
-        throw Error(e.message)
-    }
-},
+                return sizes
+            })
+            return product
+        } catch (e) {
+            if (e.code === "ECONNREFUSED") throw Error('Connection not possible')
+            throw Error(e.message)
+        }
+    },
     /**
      * Returns entire product group (e.g: size W, size GS...)
      * 
