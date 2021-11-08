@@ -207,7 +207,7 @@ module.exports = {
             }
         }
 
-        const uri = "https://stockx.com/api/graphql";
+        const uri = "https://stockx.com/p/e";
         try {
             const relatedProducts = await axios.post(uri, data, axiosOptions).then(res => res.data.data.product.related.edges);
 
