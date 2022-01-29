@@ -46,9 +46,11 @@ module.exports = {
                     url: `https://stockx.com/${hits[0].url}`,
                     uuid: hits[0].uuid,
                     "72hvolume": hits[0].sales_last_72,
+                    totalSales: hits[0].deadstock_sold,
                     seller: hits[0].brand[0].toUpperCase() + hits[0].brand.slice(1)
                 }
             })
+            console.log(product);
 
             axiosOptions = configRequest.searchAndGetProduct(options)
 
@@ -246,6 +248,7 @@ module.exports = {
                 uuid: product.uuid,
                 seller: product.seller,
                 "72hvolume": product['72hvolume'],
+                totalSales: product.totalSales,
                 sku: product.sku,
                 lastSale: product.lastSale
             })
