@@ -29,7 +29,7 @@ module.exports = {
         const country = stockxConfig.countrys.includes(options?.country) ? options.country : "US";
 
         try {
-            const url = 'https://stockx.com/api/browse?_search=dunk+l&page=1&resultsPerPage=10&dataType=product&facetsToRetrieve[]=browseVerticals&propsToRetrieve[][]=brand&propsToRetrieve[][]=colorway&propsToRetrieve[][]=media.thumbUrl&propsToRetrieve[][]=title&propsToRetrieve[][]=productCategory&propsToRetrieve[][]=shortDescription&propsToRetrieve[][]=urlKey';
+            const url = `https://stockx.com/api/browse?_search=${item.split(' ').join('%20')}&page=1&resultsPerPage=10&dataType=product&facetsToRetrieve[]=browseVerticals&propsToRetrieve[][]=brand&propsToRetrieve[][]=colorway&propsToRetrieve[][]=media.thumbUrl&propsToRetrieve[][]=title&propsToRetrieve[][]=productCategory&propsToRetrieve[][]=shortDescription&propsToRetrieve[][]=urlKey`;
             const product = await axios.get(url, configRequest.searchAndGetProduct(options)).then(res => {
                 return {
                     name: res.data.Products[0].title,
