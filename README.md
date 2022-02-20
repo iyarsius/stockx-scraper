@@ -33,7 +33,8 @@ Item structure:
     • url: <String> Product url to human interface
     • uuid: <String> Product uuid
     • lastSale: <Number> Last sale price (all sizes) in currency
-    • 72hvolume: <Number> Amout of sales last 72h
+    • 72hvolume: <Number> Amount of sales last 72h
+    • totalSales: <Number> Total amount of sales
     • retail: <Number> Retail price in USD
     • sku: <String> Product unique SKU
     • colorway: <String> Product colorways e.g "BLACK/WHITE"

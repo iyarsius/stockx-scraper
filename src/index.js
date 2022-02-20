@@ -2,7 +2,9 @@ const axios = require('axios').default;
 const stockxConfig = require('./functions/configStockx');
 const configRequest = require('./functions/configRequest');
 const algoliasearch = require("algoliasearch");
+const UserAgent = require('user-agents');
 
+// 399007023331
 module.exports = {
     ProxyList: configRequest.ProxyList,
     /**
@@ -16,54 +18,56 @@ module.exports = {
      */
     getProduct: async (item, options) => {
         if (typeof item !== "string") throw TypeError('Wrong item, please use string');
-        let baseURI = `https://xw7sbct9v6-dsn.algolia.net/1/indexes/products/query?x-algolia-agent=Algolia%20for%20JavaScript%20(4.11.0)%3B%20Browser`;
+
 
         if (options?.currency !== undefined && !stockxConfig.currencys.includes(options?.currency)) throw SyntaxError(`${options.currency} is not a valid currency`);
 
         const currency = options?.currency ? options.currency : "USD";
-        let extendURI = `&currency=${currency}`;
 
         if (options?.country !== undefined && !stockxConfig.countrys.includes(options?.country)) throw SyntaxError(`${options.country} is not a valid country`);
 
         const country = stockxConfig.countrys.includes(options?.country) ? options.country : "US";
-        extendURI = extendURI + `&country=${country}`;
-
 
         try {
-            // Retrieve API key
-            const algoliaKey = await stockxConfig.getAlgoliaKey()
-            // Connect to stockx index in algolia
-            const client = algoliasearch("XW7SBCT9V6", algoliaKey);
-
-            const index = client.initIndex("products");
-
-            const product = await index.search(item, { attributesToRetrieve: ["*"] }).then(({ hits }) => {
-                if (!hits[0]) throw Error('No product found')
+            const url = 'https://stockx.com/api/browse?_search=dunk+l&page=1&resultsPerPage=10&dataType=product&facetsToRetrieve[]=browseVerticals&propsToRetrieve[][]=brand&propsToRetrieve[][]=colorway&propsToRetrieve[][]=media.thumbUrl&propsToRetrieve[][]=title&propsToRetrieve[][]=productCategory&propsToRetrieve[][]=shortDescription&propsToRetrieve[][]=urlKey';
+            const product = await axios.get(url, configRequest.searchAndGetProduct(options)).then(res => {
                 return {
-                    name: hits[0].name,
-                    description: hits[0].description.split("<br>").join("").split("\n\n").join("\n"),
-                    image: hits[0].media.imageUrl,
-                    url: `https://stockx.com/${hits[0].url}`,
-                    uuid: hits[0].uuid,
-                    "72hvolume": hits[0].sales_last_72,
-                    seller: hits[0].brand[0].toUpperCase() + hits[0].brand.slice(1)
+                    name: res.data.Products[0].title,
+                    description: res.data.Products[0].shortDescription,
+                    image: res.data.Products[0].media.thumbUrl,
+                    url: "https://stockx.com/" + res.data.Products[0].urlKey,
+                    uuid: res.data.Products[0].objectID,
+                    seller: res.data.Products[0].brand,
+                    colorway: res.data.Products[0].colorway,
                 }
             })
 
-            axiosOptions = configRequest.searchAndGetProduct(options)
+            axiosOptions = configRequest.graphQlOptions(product, options)
 
-            baseURI = `https://stockx.com/api/products/${product.uuid}?includes=market`
-            product.sizes = await axios.get(baseURI + extendURI, axiosOptions).then(res => {
-                if (res.data.Product.shippingGroup !== 'sneakers') throw new Error("Invalid product, only support sneakers")
-                const data = res.data;
-                const variants = data.Product.children
+            product.sizes = await axios.post("https://stockx.com/p/e", {
+                operationName: "GetProduct",
+                variables: {
+                    id: product.uuid,
+                    currencyCode: currency,
+                    countryCode: country
+                },
+                query: require('./functions/payload.js')
+            }, axiosOptions).then(res => {
+                const data = res.data.data.product
+                if (data.productCategory !== 'sneakers') throw new Error("Invalid product, only support sneakers");
+
+                const variants = data.variants
 
                 const sizes = [];
                 const convert = stockxConfig.sizes
 
+                product.lastSale = data.market.salesInformation.lastSale;
+                product['72hvolume'] = data.market.salesInformation.salesLast72Hours
+                product.totalSales = data.market.deadStock.sold
+
                 for (const key in variants) {
                     const shoe = variants[key]
-                    const sizeData = shoe.shoeSize;
+                    const sizeData = shoe.sizeChart.baseSize;
 
                     const usSize = sizeData.replace(/[A-Z]|[a-z]/g, "")
                     let sizeConverter = convert.men.find(s => s.us === usSize)
@@ -75,7 +79,7 @@ module.exports = {
 
                     if (sizeData.toLowerCase().includes("w")) {
                         sizeConverter = convert.women.find(s => s.us === usSize)
-                        const isAdidas = shoe.title.toLowerCase().includes("adidas")
+                        const isAdidas = product.name.toLowerCase().includes("adidas")
                         if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
                         if (!sizeConverter) continue;
                         euSize = sizeConverter.eu
@@ -89,7 +93,7 @@ module.exports = {
                         sizeType = "Y"
                     }
 
-                    if (shoe.title.toLowerCase().includes("adidas")) {
+                    if (product.name.toLowerCase().includes("adidas")) {
                         sizeConverter = convert.adidas.men.find(s => s.us === usSize)
                         if (!sizeConverter) continue;
                         euSize = sizeConverter.eu
@@ -104,7 +108,7 @@ module.exports = {
                     }
 
                     if (sizeData.includes("K")) {
-                        const isAdidas = shoe.title.toLowerCase().includes("adidas");
+                        const isAdidas = product.name.toLowerCase().includes("adidas");
                         if (isAdidas) sizeConverter = convert.adidas.gs.find(s => s.us === usSize)
                         euSize = sizeConverter.eu
                         sizeType = "K"
@@ -115,16 +119,15 @@ module.exports = {
                         sizeUS: usSize,
                         sizeEU: euSize,
                         sizeType: sizeType,
-                        lowestAsk: shoe.market.lowestAsk,
-                        highestBid: shoe.market.highestBid,
-                        lastSale: shoe.market.lastSale
+                        lowestAsk: shoe.market.bidAskData.lowestAsk,
+                        highestBid: shoe.market.bidAskData.highestBid,
+                        lastSale: shoe.market.salesInformation.lastSale
                     })
                 }
-                product.retail = res.data.Product.traits.find(t => t.key === "retail_price")?.value
-                product.sku = res.data.Product.traits.find(t => t.key === "style_id")?.value
-                product.colorway = res.data.Product.traits.find(t => t.key === "colorway")?.value.toUpperCase()
-                product.releaseDate = res.data.Product.traits.find(t => t.key === "release_date")?.value
-                product.lastSale = sizes.map(s => s.lastSale).sort()[0]
+
+                product.retail = parseInt(data.traits.find(t => t.name === "Retail Price")?.value)
+                product.sku = data.traits.find(t => t.name === "Style")?.value
+                product.releaseDate = data.traits.find(t => t.name === "Release Date")?.value
 
                 return sizes
             })
@@ -246,6 +249,7 @@ module.exports = {
                 uuid: product.uuid,
                 seller: product.seller,
                 "72hvolume": product['72hvolume'],
+                totalSales: product.totalSales,
                 sku: product.sku,
                 lastSale: product.lastSale
             })
