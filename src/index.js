@@ -150,7 +150,7 @@ module.exports = {
     getProductGroup: async (item, options) => {
         const product = await module.exports.getProduct(item, options);
 
-        const axiosOptions = configRequest.fetchRelatedProducts(product, options);
+        const axiosOptions = configRequest.graphQlOptions(product, options);
 
         const data = {
             operationName: "FetchRelatedProducts",
