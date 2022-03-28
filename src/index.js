@@ -53,6 +53,7 @@ module.exports = {
                 },
                 query: require('./functions/payload.js')
             }, axiosOptions).then(res => {
+                console.log(res.data.data.product.variants)
                 const data = res.data.data.product
                 if (data.productCategory !== 'sneakers') throw new Error("Invalid product, only support sneakers");
 
@@ -113,7 +114,6 @@ module.exports = {
                         euSize = sizeConverter.eu
                         sizeType = "K"
                     }
-
 
                     sizes.push({
                         sizeUS: usSize,
