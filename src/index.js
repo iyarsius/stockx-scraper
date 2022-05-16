@@ -67,7 +67,9 @@ module.exports = {
 
                 for (const key in variants) {
                     const shoe = variants[key]
-                    const sizeData = shoe.sizeChart.baseSize;
+                    const sizeData = shoe.sizeChart?.baseSize;
+
+                    if (!sizeData) continue;
 
                     const usSize = sizeData.replace(/[A-Z]|[a-z]/g, "")
                     let sizeConverter = convert.men.find(s => s.us === usSize)
