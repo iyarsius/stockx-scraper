@@ -10,6 +10,8 @@ npm i stockx-scraper
 
 # use
 
+> for now you need to import a cookie with _px3 or _pxvid values to avoid 403 errors
+
 ```js
 const stockx = require('stockx-scraper');
 

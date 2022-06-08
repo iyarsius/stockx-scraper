@@ -1,5 +1,6 @@
 const UserAgent = require('user-agents');
 const splitProxy = require('split-proxy');
+const dayjs = require('dayjs')
 
 // Internal function filtering proxy and proxylist
 const _setProxy = (proxy) => {
@@ -52,15 +53,27 @@ module.exports = {
                 "accept-language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
                 "cache-control": "no-cache",
                 "pragma": "no-cache",
-                'cookie': options?.cookie ? cookie : _setCookie({
+                'cookie': options?.cookie ? options.cookie : _setCookie({
                     stockx_homepage: "sneakers",
                     language_code: "en",
-                    stockx_market_country: options?.country ? options.country : "US",
+                    stockx_selected_region: options?.country ? options.country : "US",
                     stockx_preferred_market_activity: "sales",
+                    stockx_dismiss_modal: true,
                     IR_gbd: "stockx.com",
                     cookie_policy_accepted: true,
                     stockx_product_visits: Math.floor(Math.random() * 10),
                     stockx_default_sneakers_size: "All",
+                    OptanonConsent: new URLSearchParams({
+                        isGpcEnabled: 1,
+                        datestamp: dayjs().format("ddd+MMM+DD+YYYY+HH%3Amm%3Ass+Z"),
+                        version: "6.36.0",
+                        isIABGlobal: false,
+                        hosts: "",
+                        consentId: "124f4404-36c7-437d-aeee-1b67d82251ee",
+                        interactionCount: 1,
+                        landingPath: "NotLandingPage",
+                        groups: encodeURIComponent("C0001:1,C0002:1,C0005:1,C0004:1,C0003:1")
+                    }).toString(),
                 }),
                 "sec-fetch-dest": "document",
                 "sec-fetch-mode": "navigate",
