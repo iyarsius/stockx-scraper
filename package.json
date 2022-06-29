@@ -1,6 +1,6 @@
 {
   "name": "stockx-scraper",
-  "version": "1.6.8",
+  "version": "1.6.9",
   "description": "Scrape sneakers data from stockx with dynamic parmeters like proxy (static or rotating), country and currency.",
   "main": "./src/index.js",
   "scripts": {
@@ -26,11 +26,13 @@
   },
   "homepage": "https://github.com/iyarsius/stockx-scraper#readme",
   "dependencies": {
-    "algoliasearch": "^4.11.0",
     "axios": "^0.21.4",
     "cheerio": "^1.0.0-rc.10",
+    "cycletls": "^1.0.21",
     "dayjs": "^1.11.3",
+    "iyaxios": "^1.0.0",
     "split-proxy": "^2.0.0",
-    "user-agents": "^1.0.772"
+    "user-agents": "^1.0.1059",
+    "useragent": "^2.3.0"
   }
 }

@@ -103,7 +103,7 @@ module.exports = {
                 'apollographql-client-name': 'Iron',
                 'apollographql-client-version': graphqlClientDate,
                 'content-type': 'application/json',
-                'cookie': options?.cookie ? cookie : _setCookie({
+                'cookie': options?.cookie ? options.cookie : _setCookie({
                     stockx_homepage: "sneakers",
                     language_code: "en",
                     stockx_market_country: options?.country ? options.country : "US",

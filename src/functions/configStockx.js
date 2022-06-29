@@ -1,37 +1,8 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const config = require('./configRequest');
-const algoliasearch = require("algoliasearch");
-
-let algoliaKey = ""
 
 module.exports = {
-    getAlgoliaKey: async () => {
-        if (algoliaKey === "" || algoliaKey.expiryDate < Date.now() - 10000) {
-        // scrape homepage
-        const html = await axios.get('https://stockx.com', config.searchAndGetProduct()).then(res => res.data);
-        const $ = cheerio.load(html, { xmlMode: false });
-    
-        // extract algolia key from scripts
-        const scripts = $('script').get();
-        const key = scripts[1].children[0].data.split('\'')[1]
-
-        // connect algolia client
-        const client = algoliasearch("XW7SBCT9V6", key);
-
-        // calculate end of validity time
-        const date = Date.now()
-        const validity = await client.getSecuredApiKeyRemainingValidity(key)
-        const expiryDate = date + validity * 1000;
-
-        algoliaKey = {
-            key: key,
-            expiryDate: expiryDate
-        }
-        return algoliaKey.key
-        }
-        return algoliaKey.key
-    },
     currencys: ["EUR", "USD", "AUD", "CHF", "CAD", "GBP", "HKD", "JPY"],
     countrys: [
         "AD", "AE", "BE", "SK", "SN", "SV", "TC", "TH", "TW", "UY", "VA", "VE", "VI", "BG", "VN", "ZA", "IT", "PT",

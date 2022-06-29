@@ -1,7 +1,6 @@
 const axios = require('axios').default;
 const stockxConfig = require('./functions/configStockx');
 const configRequest = require('./functions/configRequest');
-const algoliasearch = require("algoliasearch");
 const UserAgent = require('user-agents');
 
 // 399007023331
@@ -44,7 +43,7 @@ module.exports = {
 
             axiosOptions = configRequest.graphQlOptions(product, options)
 
-            product.sizes = await axios.post("https://stockx.com/p/e", {
+            product.sizes = await axios.post("https://stockx.com/api/p/e", {
                 operationName: "GetProduct",
                 variables: {
                     id: product.uuid,
@@ -135,7 +134,7 @@ module.exports = {
             return product
         } catch (e) {
             if (e.code === "ECONNREFUSED") throw Error('Connection not possible')
-            throw Error(e.message)
+            throw e
         }
     },
     /**
