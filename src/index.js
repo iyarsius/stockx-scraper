@@ -65,7 +65,11 @@ module.exports = {
                 product.totalSales = data.market.deadStock.sold
 
                 for (const key in variants) {
-                    const shoe = variants[key]
+                    const shoe = variants[key];
+
+                    // remove ghost sizes
+                    if (!shoe.market.bidAskData.lowestAskSize) continue;
+                    
                     const sizeData = shoe.sizeChart?.baseSize;
 
                     if (!sizeData) continue;

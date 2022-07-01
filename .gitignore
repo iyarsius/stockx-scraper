@@ -3,3 +3,5 @@ test.js
 test.txt
 px
 index.html
+splitStringsObfuscated.js
+output.js
