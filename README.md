@@ -1,132 +1,65 @@
-# stockx-scraper
 
-Scrape sneakers data from stockx with dynamic parameters like proxy (static or rotating), country and currency. It also support EU sizes convesions.
+# stockx-scraper v2
+Scrape sneakers data using dynamic parameters like proxy (rotating support), cookie, country and currency.
 
-# install
+It also support typescript and full sizes conversions (EU, UK, JP...)
 
-```js
+
+
+## Install
+
+```javascript
 npm i stockx-scraper
 ```
 
-# use
+if you want to use v1
 
-> for now you need to import a cookie with _px3 or _pxvid values to avoid 403 errors
-
-```js
-const stockx = require('stockx-scraper');
-
-const options = {
-    currency: 'EUR', // Default USD
-    country: 'FR', // Default US
-    proxy: 'http://host:port@username:password', // Default localhost
-    cookie: 'your cookie here' // By default the module create its own cookies
-}
-
-stockx.getProduct('jordan 1', options)
-    .then(item => console.log(item))
-    .catch(e => console.log(e))
+```javascript
+npm i stockx-scraper@1.6.11
 ```
 
-Item structure:
 
-    • name: <String> Full product name
-    • description: <String> Short description (not for all items)
-    • image: <String> Image directURI
-    • url: <String> Product url to human interface
-    • uuid: <String> Product uuid
-    • lastSale: <Number> Last sale price (all sizes) in currency
-    • 72hvolume: <Number> Amount of sales last 72h
-    • totalSales: <Number> Total amount of sales
-    • retail: <Number> Retail price in USD
-    • sku: <String> Product unique SKU
-    • colorway: <String> Product colorways e.g "BLACK/WHITE"
-    • releaseDate: <String> YYYY/MM/DD Release date
-    • seller: <String> Product distributor e.g Nike, Jordan, Adidas...
-    • sizes: <Array> Array of sizeObject
+## Usage
 
-SizeObject structure:
+```javascript
+const { StockxClient } = require("stockx-scraper");
 
-    • sizeUS: <String> US size
-    • sizeEU: <String> Converted from US size
-    • sizeType: <String> Size optionnal keywords e.g W for Woman, Y for GS...
-    • lowestAsk: <Number> Lowest ask price for this size in currency
-    • highestBid: <Number> Highest bid price for this size in currency
-    • lastSale: <Number> Last sale price for this size in currency
-
-# proxy-management
-
-use a rotating proxy system
-
-```js
-const stockx = require('stockx-scraper');
-
-// Load rotating proxy list
-const proxy = new stockx.ProxyList([
-    'http://host:port@username:password',
-    'http://host:port@username:password',
-    'http://host:port@username:password',
-])
-
-const options = {
-    currency: 'EUR',
-    country: 'FR',
-    proxy: proxy,
-    cookie: 'your cookie here'
-}
-
-// Proxies will rotate on each request to avoid ip block
-stockx.getProduct('jordan 1', options)
-    .then(item => console.log(item))
-    .catch(e => console.log(e))
+const client = new StockxClient({
+    currencyCode: "EUR" // default USD
+    countryCode: "FR" // default US
+    languageCode: "FR" // default EN
+    proxys: [
+        "http://username:pass@ip:port",
+        "http://username:pass@ip:port"
+        ...
+    ],
+    cookie: "Your cookie here" // by default module create it's own
+})
 ```
 
-Proxy rotation saved even when calling the function multiple times.
 
-# fetch product group
+## Methods
 
-You can also load all sizes types from 1 model, e.g dunk low white/black, dunk low white black (gs), dunk low white black (ps)...
+```javascript
+const products = await client.search("jordan 1");
+const firstResult = products[0];
 
-```js
-const stockx = require('stockx-scraper');
+// fetch variants and some data
+await firstResult.fetch();
 
-// Same options as getProduct function
-stockx.getProductGroup('jordan 1', options)
-    .then(group => console.log(group))
-    .catch(e => console.log(e))
+// get related products
+const related = await firstResult.getRelatedProducts();
+
+// related works like normal products
+await related.fetch();
 ```
 
-ProductGroup structure:
-
-    • men: <RelatedProduct> Men product
-    • women: <RelatedProduct> Women product
-    • gs: <RelatedProduct> Kid product
-    • ps: <RelatedProduct> Infant product
-    • td: <RelatedProduct> Toddler product
-
-RelatedProduct structure:
-
-    • name: <String> Full product name
-    • image: <String> Image directURI
-    • url: <String> Product url to human interface
-    • uuid: <String> Product uuid
-    • lastSale: <Number> Last sale price (all sizes) in currency
-    • 72hvolume: <Number> Amout of sales last 72h
-    • sku: <String> Product unique SKU
-    • seller: <String> Product distributor e.g Nike, Jordan, Adidas...
-
-To scrape entire data from relatedProducts use getProduct function.
-
-```js
-try {
-    // Fetch related products
-    const productGroup = await stockx.getProductGroup('jordan 1')
-
-    // Get entire data from all of them
-    for (const key in productGroup) {
-        // Proxies recommended
-        stockx.getProduct(productGroup[key].sku).then(console.log)
-    }
-} catch (e) {
-    console.log(e)
-}
-```
+Even without calling .fetch(), a product will always contains
+- name
+- sku
+- description
+- image (url)
+- url
+- uuid
+- seller (nike, adidas...)
+- colorway

@@ -1,7 +1,6 @@
-node_modules
 test.js
-test.txt
-px
-index.html
-splitStringsObfuscated.js
-output.js
+node_modules
+package-lock.json
+tsconfig.json
+test.ts
+dist
