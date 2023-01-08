@@ -52,6 +52,7 @@ export class StockxProduct {
 
         this.sizes = data.variants.map(v => {
             const options = {
+                uuid: v.id,
                 sizeUS: `${v.sizeChart?.baseSize}`,
                 lowestAsk: v.market.bidAskData.lowestAsk,
                 highestBid: v.market.bidAskData.highestBid,
@@ -76,9 +77,7 @@ export class StockxProduct {
         })
     };
 
-    async getRelatedProducts() {
-        const graphqlClientDate = new Date().toISOString().split('T')[0].replace('-', '.');
-
+    async getRelatedProducts(): Promise<StockxProduct[]> {
         const response = await this.client.request.post("https://stockx.com/api/p/e", {
             operationName: "FetchRelatedProducts",
             query: require(join(__dirname, "../queries/FetchRelatedProducts.js")),
