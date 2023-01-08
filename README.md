@@ -12,13 +12,6 @@ It also support typescript and full sizes conversions (EU, UK, JP...)
 npm i stockx-scraper
 ```
 
-if you want to use v1
-
-```javascript
-npm i stockx-scraper@1.6.11
-```
-
-
 ## Usage
 
 ```javascript
@@ -41,7 +34,10 @@ const client = new StockxClient({
 ## Methods
 
 ```javascript
-const products = await client.search("jordan 1");
+const products = await client.search({
+    query: "yeezy"
+});
+
 const firstResult = products[0];
 
 // fetch variants and some data
@@ -51,7 +47,7 @@ await firstResult.fetch();
 const related = await firstResult.getRelatedProducts();
 
 // related works like normal products
-await related.fetch();
+await related[0].fetch();
 ```
 
 Even without calling .fetch(), a product will always contains
