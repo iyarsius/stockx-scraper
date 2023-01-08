@@ -1,4 +1,4 @@
-import { IClientCountryCode, IClientCurrencyCode, IClientLanguageCode } from "./Client";
+import { IClientCountryCode, IClientCurrencyCode, IClientLanguageCode } from "./StockxClient";
 
 export interface IStockxProductOptions {
     name: string;

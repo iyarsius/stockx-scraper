@@ -28,10 +28,13 @@
     "nike"
   ],
   "dependencies": {
+    "@types/auth0": "^2.35.6",
+    "@types/set-cookie-parser": "^2.4.2",
     "@types/user-agents": "^1.0.2",
+    "auth0": "^2.42.0",
+    "axios": "^1.2.2",
     "dayjs": "^1.11.5",
     "https-proxy-agent": "^5.0.1",
-    "iyaxios": "^1.0.0",
     "path": "^0.12.7",
     "split-proxy": "^2.0.0",
     "ts-node": "^10.9.1",

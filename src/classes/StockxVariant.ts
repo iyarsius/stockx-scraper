@@ -1,5 +1,5 @@
 import { IStockxVariantOptions } from "../types/StockxVariant";
-import { StockxClient } from "./Client";
+import { StockxClient } from "./StockxClient";
 
 export class StockxVariant {
     sizeUS: string;
@@ -10,15 +10,10 @@ export class StockxVariant {
     lowestAsk: number;
     highestBid: number;
     lastSale: number;
+    numberOfAsks: number;
+    numberOfBids: number;
 
     constructor(client: StockxClient, options: IStockxVariantOptions) {
-        this.sizeUS = options.sizeUS;
-        this.sizeEU = options.sizeEU;
-        this.sizeUK = options.sizeUK;
-        this.sizeJP = options.sizeJP;
-        this.sizeKR = options.sizeKR;
-        this.lowestAsk = options.lowestAsk;
-        this.highestBid = options.highestBid;
-        this.lastSale = options.lastSale;
+        Object.assign(this, options);
     };
 }

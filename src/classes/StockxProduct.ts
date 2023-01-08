@@ -1,10 +1,10 @@
-import axios from "iyaxios";
 import { join } from "path";
-import { IClientCountryCode, IClientCurrencyCode, IClientLanguageCode } from "../types/Client";
-import { IStockxProductOptions } from "../types/Product";
+import { IClientCountryCode, IClientCurrencyCode, IClientLanguageCode } from "../types/StockxClient";
+import { IStockxProductOptions } from "../types/StockxProduct";
 import { IStockxVariantOptions } from "../types/StockxVariant";
-import { StockxClient } from "./Client";
+import { StockxClient } from "./StockxClient";
 import { StockxVariant } from "./StockxVariant";
+import { writeFileSync } from "fs";
 
 export class StockxProduct {
     client: StockxClient;
@@ -29,30 +29,19 @@ export class StockxProduct {
     };
 
     async fetch() {
-        const graphqlClientDate = new Date().toISOString().split('T')[0].replace('-', '.');
-        const entity = this.client.entityList.getEntity();
-
-        const response = await axios.post("https://stockx.com/api/p/e", {
+        const response = await this.client.request.post("https://stockx.com/api/p/e", {
             operationName: "GetProduct",
             variables: {
                 id: this.uuid,
                 currencyCode: this.client.currencyCode,
-                countryCode: this.client.countryCode
+                countryCode: this.client.countryCode,
+                marketName: this.client.countryCode,
             },
             query: require(join(__dirname, "../queries/GetProduct.js"))
-        }, {
-            headers: {
-                "accept": "*/*",
-                'apollographql-client-name': 'Iron',
-                'apollographql-client-version': graphqlClientDate,
-                'content-type': 'application/json',
-                'cookie': entity.cookie,
-                'user-agent': entity.userAgent,
-            },
-            httpsAgent: entity.httpsAgent
         });
 
-        const data = response.data.data.product
+        const data = response.data.data.product;
+
         if (data.productCategory !== 'sneakers') throw new Error("Invalid product, only support sneakers");
 
         this.lastSale = data.market.salesInformation.lastSale;
@@ -66,7 +55,9 @@ export class StockxProduct {
                 sizeUS: `${v.sizeChart?.baseSize}`,
                 lowestAsk: v.market.bidAskData.lowestAsk,
                 highestBid: v.market.bidAskData.highestBid,
-                lastSale: v.market.salesInformation.lastSale
+                lastSale: v.market.salesInformation.lastSale,
+                numberOfAsks: v.market.bidAskData.numberOfAsks,
+                numberOfBids: v.market.bidAskData.numberOfBids,
             };
 
             for (const displayOption of v.sizeChart?.displayOptions) {
@@ -87,9 +78,8 @@ export class StockxProduct {
 
     async getRelatedProducts() {
         const graphqlClientDate = new Date().toISOString().split('T')[0].replace('-', '.');
-        const entity = this.client.entityList.getEntity();
 
-        const response = await axios.post("https://stockx.com/api/p/e", {
+        const response = await this.client.request.post("https://stockx.com/api/p/e", {
             operationName: "FetchRelatedProducts",
             query: require(join(__dirname, "../queries/FetchRelatedProducts.js")),
             variables: {
@@ -98,16 +88,6 @@ export class StockxProduct {
                 productId: this.uuid,
                 type: "RELATED"
             }
-        }, {
-            headers: {
-                "accept": "*/*",
-                'apollographql-client-name': 'Iron',
-                'apollographql-client-version': graphqlClientDate,
-                'content-type': 'application/json',
-                'cookie': entity.cookie,
-                'user-agent': entity.userAgent,
-            },
-            httpsAgent: entity.httpsAgent
         });
 
         return response.data.data.product.related.edges.map(edge => new StockxProduct(this.client, {

@@ -7,4 +7,6 @@ export interface IStockxVariantOptions {
     lowestAsk: number;
     highestBid: number;
     lastSale: number;
+    numberOfAsks: number;
+    numberOfBids: number;
 }

@@ -11,6 +11,17 @@ export interface IClientOptions {
 }
 
 export interface ISearchOptions {
-    page?: number;
-    productsPerPage?: number;
+    filtersVersion?: number;
+    page?: {
+        index: number;
+        limit: number;
+    };
+    query: string;
+    sort?: {
+        id: "featured",
+        order: "DESC" | "ASC",
+    };
+    staticRanking?: {
+        enabled: boolean;
+    }
 }

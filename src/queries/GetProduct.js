@@ -64,6 +64,8 @@ fragment BidButtonContentFragment on Product {
       highestBidSize
       lowestAsk
       lowestAskSize
+      numberOfAsks
+      numberOfBids
       __typename
 }
 __typename
@@ -76,6 +78,8 @@ variants {
         highestBidSize
         lowestAsk
         lowestAskSize
+        numberOfAsks
+        numberOfBids
         __typename
   }
   __typename

@@ -1,7 +1,6 @@
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { AxiosProxyConfig } from "iyaxios";
 
-export interface IEntity {
+export interface IConfig {
     httpsAgent: HttpsProxyAgent
     userAgent: string;
     cookie: string;
