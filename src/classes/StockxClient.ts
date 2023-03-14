@@ -34,7 +34,7 @@ export class StockxClient {
             query: require("../queries/GetSearchResults.js"),
             variables: {
                 filtersVersion: options.filtersVersion || 4,
-                query: options.query,
+                query: encodeURIComponent(options.query),
                 sort: options.sort || {
                     id: "featured",
                     order: "DESC"

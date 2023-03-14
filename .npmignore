@@ -1,0 +1,6 @@
+test.js
+node_modules
+package-lock.json
+tsconfig.json
+test.ts
+dist

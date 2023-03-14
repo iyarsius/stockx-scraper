@@ -30,7 +30,7 @@ export class StockxRequest extends Axios {
             axiosConfig.headers["x-stockx-device-id"] = "x";
 
             return axiosConfig;
-        })
+        });
     };
 
     private _createCookie(): string {
